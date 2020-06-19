@@ -35,10 +35,13 @@ def sequence_alignment(file, d, seq1, seq2):
 	for i in range(1,row):
 		F[i][0] = i*d
 
+	value = 2
+
 	for i in range(1,row):
 		for j in range(1, column):
 			F[i][j]	= max(F[i-1][j-1] + s[r_c[seq2[i-1]]][r_c[seq1[j-1]]], F[i-1][j] + d, F[i][j-1] + d)
-	
+
+	print (F)
 
 	i = row-1
 	j = column-1		
@@ -47,6 +50,7 @@ def sequence_alignment(file, d, seq1, seq2):
 	alignment_seq2 = ""
 
 	while (i > 0 or j > 0):
+
 		if (i>0 and j>0 and F[i][j] == F[i-1][j-1] + s[r_c[seq2[i-1]]][r_c[seq1[j-1]]]):		
 			alignment_seq1 = seq1[j-1] + alignment_seq1
 			alignment_seq2 = seq2[i-1] + alignment_seq2
@@ -63,14 +67,19 @@ def sequence_alignment(file, d, seq1, seq2):
 			alignment_seq1 = seq1[j-1] + alignment_seq1
 			j = j-1					
 			
+	print ()		
 	print (alignment_seq1)
+	print ()
 	print (alignment_seq2)
 
+
 if __name__ == "__main__":
-
-	filename = sys.argv[1]
+	filename = sys.argv[1]	
 	penalty = int(sys.argv[2])
-
+	
 	file = open(filename, "r")
 
-	sequence_alignment(file, penalty, "AAG", "AGC")
+	seq1 = "AAG"
+	seq2 = "AGC"	
+
+	sequence_alignment(file, penalty, seq1, seq2)
