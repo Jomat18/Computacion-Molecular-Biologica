@@ -1,11 +1,9 @@
+#!/usr/bin/python
 import sys
 import numpy as np
 
-def sequence_alignment(file, d, seq1, seq2):
-
-	# Loading substitution F
+def substitution_matrix(file):
 	next(file)  
-
 	r_c = {}
 	s = []
 	i = 0
@@ -21,72 +19,91 @@ def sequence_alignment(file, d, seq1, seq2):
 
 	file.close()
 
-	# sequence alignment
+	return r_c, s
 
-	column = len(seq1)+1
-	row = len(seq2)+1
+def get_sequences(F, i, j, alignmented_seq1 = "", alignmented_seq2 = ""):
+	
+	if i > 0 or j > 0:			
+		if (F[i][j][0]):
 
-	F = np.zeros([row, column], dtype=int) 
-
-	# Adding zeros 
-	for i in range(1,column):
-		F[0][i] = 0
-
-	for i in range(1,row):
-		F[i][0] = 0
-
-	for i in range(1,row):
-		for j in range(1, column):
-			F[i][j]	= max(F[i-1][j-1] + s[r_c[seq2[i-1]]][r_c[seq1[j-1]]], F[i-1][j] + d, F[i][j-1] + d, 0)
-
-	print (F)
-
-	i = row-1
-	j = column-1		
-
-	alignment_seq1 = ""
-	alignment_seq2 = ""
-
-	while (i > 0 or j > 0):
-			if (F[i][j]):
-
-				if (i>0 and j>0 and F[i][j] == F[i-1][j-1] + s[r_c[seq2[i-1]]][r_c[seq1[j-1]]]):		
-					alignment_seq1 = seq1[j-1] + alignment_seq1
-					alignment_seq2 = seq2[i-1] + alignment_seq2
-					i = i-1
-					j = j-1
-
-				elif (i>0 and F[i][j]==F[i-1][j]+d):
-					alignment_seq1 = "-" + alignment_seq2	
-					alignment_seq2 = seq2[i-1] + alignment_seq2
-					i = i-1
-
-				else:
-					alignment_seq2 = "-" + alignment_seq2
-					alignment_seq1 = seq1[j-1] + alignment_seq1
-					j = j-1
-
-			if j == 1:
+			if (i>0 and j>0 and F[i][j][1] == 'DIAG'):		
+				alignmented_seq1 = seq1[j-1] + alignmented_seq1
+				alignmented_seq2 = seq2[i-1] + alignmented_seq2
 				i = i-1
-				j = column-1						
+				j = j-1
+
+			elif (i>0 and F[i][j][1]=='UP'):
+				alignmented_seq1 = "-" + alignmented_seq2	
+				alignmented_seq2 = seq2[i-1] + alignmented_seq2
+				i = i-1
 
 			else:
-				j = j-1			
+				alignmented_seq2 = "-" + alignmented_seq2
+				alignmented_seq1 = seq1[j-1] + alignmented_seq1
+				j = j-1
 
-			
-	print ()		
-	print (alignment_seq1)
-	print ()
-	print (alignment_seq2)
+		if j == 1:
+			i = i-1
+			j = column-1						
+
+		else:
+			j = j-1			
+
+		get_sequences(F, i, j, alignmented_seq1, alignmented_seq2)	
+
+	else:		
+		print ()		
+		print (alignmented_seq1)
+		print ()
+		print (alignmented_seq2)	
+
+
+def local_alignment(F, i, j):
+
+	diag = F[i-1][j-1][0] + s[r_c[seq2[i-1]]][r_c[seq1[j-1]]]
+	up = F[i-1][j][0] + d
+	left = F[i][j-1][0] + d
+
+	F[i][j][0]	= max(diag, up, left, 0)
+	
+	if F[i][j][0]==diag:
+		F[i][j][1] = 'DIAG'	
+
+	if F[i][j][0]==up:	
+		F[i][j][1] = 'UP'
+	
+	if F[i][j][0]==left:	
+		F[i][j][1] = 'LEFT'
+
+	if i==row-1 and j==column-1:
+		print ()
+		print (F)
+		get_sequences(F, i, j)
+		return
+
+	if j<column-1:
+		local_alignment(F, i ,j+1)	
+	else:	
+		local_alignment(F, i+1 ,1)
 
 
 if __name__ == "__main__":
+
 	filename = sys.argv[1]	
-	penalty = int(sys.argv[2])
+	d = int(sys.argv[2])
 	
 	file = open(filename, "r")
+
+	#Loading substitution matrix
+	r_c, s = substitution_matrix(file)	
 
 	seq1 = "AAG"
 	seq2 = "AGC"	
 
-	sequence_alignment(file, penalty, seq1, seq2)
+	# zeros column and row at the beginning of matrix F
+	column = len(seq1)+1
+	row = len(seq2)+1
+
+	F = np.zeros([row, column], dtype='i,O') 
+
+	local_alignment(F, 1, 1)	
