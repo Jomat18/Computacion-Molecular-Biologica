@@ -22,40 +22,34 @@ def substitution_matrix(file):
 	return r_c, s
 
 def get_sequences(F, i, j, alignmented_seq1 = "", alignmented_seq2 = ""):
-	
-	if i > 0 or j > 0:			
-		if (F[i][j][0]):
 
-			if (i>0 and j>0 and F[i][j][1] == 'DIAG'):		
-				alignmented_seq1 = seq1[j-1] + alignmented_seq1
-				alignmented_seq2 = seq2[i-1] + alignmented_seq2
-				i = i-1
-				j = j-1
-
-			elif (i>0 and F[i][j][1]=='UP'):
-				alignmented_seq1 = "-" + alignmented_seq2	
-				alignmented_seq2 = seq2[i-1] + alignmented_seq2
-				i = i-1
-
-			else:
-				alignmented_seq2 = "-" + alignmented_seq2
-				alignmented_seq1 = seq1[j-1] + alignmented_seq1
-				j = j-1
-
-		if j == 1:
-			i = i-1
-			j = column-1						
-
-		else:
-			j = j-1			
-
-		get_sequences(F, i, j, alignmented_seq1, alignmented_seq2)	
-
-	else:		
+	if F[i][j][0]==0:
 		print ()		
 		print (alignmented_seq1)
 		print ()
 		print (alignmented_seq2)	
+		return
+			
+	
+	if i > 0 or j > 0:			
+		
+		if (i>0 and j>0 and F[i][j][1] == 'DIAG'):		
+			alignmented_seq1 = seq1[j-1] + alignmented_seq1
+			alignmented_seq2 = seq2[i-1] + alignmented_seq2
+			i = i-1
+			j = j-1
+
+		elif (i>0 and F[i][j][1]=='UP'):
+			alignmented_seq1 = "-" + alignmented_seq2	
+			alignmented_seq2 = seq2[i-1] + alignmented_seq2
+			i = i-1
+
+		else:
+			alignmented_seq2 = "-" + alignmented_seq2
+			alignmented_seq1 = seq1[j-1] + alignmented_seq1
+			j = j-1
+
+		get_sequences(F, i, j, alignmented_seq1, alignmented_seq2)			
 
 
 def local_alignment(F, i, j):
@@ -78,6 +72,15 @@ def local_alignment(F, i, j):
 	if i==row-1 and j==column-1:
 		print ()
 		print (F)
+
+		mayor = -1000
+		for r in range(1,row):
+			for c in range(1, column):
+				if F[r][c][0]>mayor:
+					i = r
+					j = c
+					mayor = F[r][c][0]
+
 		get_sequences(F, i, j)
 		return
 

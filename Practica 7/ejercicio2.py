@@ -17,8 +17,15 @@ def local_alignment(d, seq1, seq2):
 	print ()
 	print (F)		
 
-	i = row-1
-	j = column-1				
+	mayor = -1000
+	i = 0
+	j = 0
+	for r in range(1,row):
+		for c in range(1, column):
+			if F[r][c]>mayor:
+				i = r
+				j = c
+				mayor = F[r][c]
 
 	alignmented_seq1 = ""
 	alignmented_seq2 = ""
@@ -30,32 +37,26 @@ def local_alignment(d, seq1, seq2):
 		if seq2[i-1] != seq1[j-1]:
 			value = mismatch  
 
-		if (F[i][j]):
-
-			if (i>0 and j>0 and F[i][j] == F[i-1][j-1] + value):		
-				alignmented_seq1 = seq1[j-1] + alignmented_seq1
-				alignmented_seq2 = seq2[i-1] + alignmented_seq2
-				i = i-1
-				j = j-1
-
-			elif (i>0 and F[i][j]==F[i-1][j]+d):
-				alignmented_seq1 = "-" + alignmented_seq2	
-				alignmented_seq2 = seq2[i-1] + alignmented_seq2
-				i = i-1
-
-			else:
-				alignmented_seq2 = "-" + alignmented_seq2
-				alignmented_seq1 = seq1[j-1] + alignmented_seq1
-				j = j-1
-
-		if j == 1:
+		if (i>0 and j>0 and F[i][j] == F[i-1][j-1] + value):		
+			alignmented_seq1 = seq1[j-1] + alignmented_seq1
+			alignmented_seq2 = seq2[i-1] + alignmented_seq2
 			i = i-1
-			j = column-1						
+			j = j-1
+
+		elif (i>0 and F[i][j]==F[i-1][j]+d):
+			alignmented_seq1 = "-" + alignmented_seq2	
+			alignmented_seq2 = seq2[i-1] + alignmented_seq2
+			i = i-1
 
 		else:
-			j = j-1			
+			alignmented_seq2 = "-" + alignmented_seq2
+			alignmented_seq1 = seq1[j-1] + alignmented_seq1
+			j = j-1	
 
-			
+		if F[i][j]==0:
+			break	
+
+
 	print ()		
 	print (alignmented_seq1)
 	print ()
@@ -83,8 +84,8 @@ if __name__ == "__main__":
 	
 	d = int(sys.argv[3])
 
-	identicalMatch = 5
-	mismatch = -5
+	identicalMatch = 2
+	mismatch = -2
 
 	f1 = open(file1, "r")
 	f2 = open(file2, "r")
