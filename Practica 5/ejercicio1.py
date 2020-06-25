@@ -14,12 +14,30 @@ def substitution_matrix(file):
 
 			r_c[line.split('\t')[0:1][0]] = i 
 			i = i+1
-
 			s.append(list(map(int,line.split('\t')[1:])))
 
 	file.close()
 
 	return r_c, s
+
+def get_score(seq1, seq2):
+	score = 0
+	for i in range(len(seq1)):
+		if seq1[i] == seq2[i]:
+			print (s[r_c[seq2[i]]][r_c[seq1[i]]], end='', sep='')
+			score = score + s[r_c[seq2[i]]][r_c[seq1[i]]]
+		else:
+			if seq1[i]=='-' or seq2[i]=='-':
+				print ('(',d,')', end='', sep='')
+				score = score + d
+			else:
+				print ('(',s[r_c[seq2[i]]][r_c[seq1[j]]] ,')', end='', sep='')		
+				score = score + s[r_c[seq2[i]]][r_c[seq1[i]]]
+
+		print ('+', end='', sep='')
+
+	print("\b",end="") 		
+	print ('=', score)					
 
 def get_sequences(F, i, j):
 	
@@ -46,11 +64,13 @@ def get_sequences(F, i, j):
 			
 	print ()		
 	print (alignmented_seq1)
-	print ()
 	print (alignmented_seq2)	
+	get_score(alignmented_seq1, alignmented_seq2)
 
 
 def global_alignment(F, i, j):
+
+	number_roads = []
 
 	diag = F[i-1][j-1][0] + s[r_c[seq2[i-1]]][r_c[seq1[j-1]]]
 	up = F[i-1][j][0] + d
@@ -59,21 +79,19 @@ def global_alignment(F, i, j):
 	F[i][j][0]	= max(diag, up, left)
 	
 	if F[i][j][0]==diag:
-		F[i][j][1] = 'DIAG'
-		if i==row-1 and j==column-1:
-			print ()
-			print (F)
-			get_sequences(F, i, j)
-			return
-
-		elif j<column-1:
-			global_alignment(F, i ,j+1)	
-		else:	
-			global_alignment(F, i+1 ,1)						
-			
+		#F[i][j][1] = 'DIAG'			
+		number_roads.append('DIAG')
 
 	if F[i][j][0]==up:	
-		F[i][j][1] = 'UP'
+		#F[i][j][1] = 'UP'
+		number_roads.append('UP')
+	
+	if F[i][j][0]==left:	
+		#F[i][j][1] = 'LEFT'
+		number_roads.append('LEFT')
+	
+	for n in range(len(number_roads)):
+		F[i][j][1] = number_roads[n]
 		if i==row-1 and j==column-1:
 			print ()
 			print (F)
@@ -83,21 +101,7 @@ def global_alignment(F, i, j):
 		elif j<column-1:
 			global_alignment(F, i ,j+1)	
 		else:	
-			global_alignment(F, i+1 ,1)						
-
-	
-	if F[i][j][0]==left:	
-		F[i][j][1] = 'LEFT'
-		if i==row-1 and j==column-1:
-			print ()
-			print (F)
-			get_sequences(F, i, j)
-			return
-
-		if j<column-1:
-			global_alignment(F, i ,j+1)	
-		else:	
-			global_alignment(F, i+1 ,1)						
+			global_alignment(F, i+1 ,1)							
 
 
 if __name__ == "__main__":
@@ -112,6 +116,9 @@ if __name__ == "__main__":
 
 	seq1 = "AAG"
 	seq2 = "AGC"	
+
+	#identicalMatch = 1
+	#mismatch = -1
 
 	# zeros column and row at the beginning of matrix F
 	column = len(seq1)+1
