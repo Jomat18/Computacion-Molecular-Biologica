@@ -160,4 +160,5 @@ if __name__ == "__main__":
 		F[i][0][0] = i*d
 		F[i][0][1] = 'U'
 
+	#sys.getrecursionlimit()		
 	global_alignment(F, 1, 1)	
