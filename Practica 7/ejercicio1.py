@@ -99,7 +99,7 @@ def local_alignment(F, i, j):
 		s_j = 0 
 		for r in range(1,row):
 			for c in range(1, column):
-				if F[r][c][0]>major:
+				if F[r][c][0]>=major:
 					s_i = i
 					s_j = j
 					i = r
