@@ -142,7 +142,10 @@ if __name__ == "__main__":
 	#Loading substitution matrix
 	r_c, s = substitution_matrix(file)	
 
-	seq1 = "AAG"
+	#seq1 = "AAG"
+	#seq2 = "AGC"	
+
+	seq1 = "AAAC"
 	seq2 = "AGC"	
 
 	# zeros column and row at the beginning of matrix F
